@@ -1,9 +1,0 @@
-🚀 Starting Job for METHOD: linearrag | DATASET: nq
-📂 Dataset Mapping: nq -> NQ
-🐍 Using Retriever Env: /scratch/df2362/conda_env_new/linearrag
-📝 Logs will be saved to: /scratch/sl11766/GraphSearch-main/logs/linearrag/nq/4687599
-=== Step 1: Starting vLLM Server ===
-=== Step 2: Starting Retriever (linearrag) ===
-⏳ Waiting 300s for servers to initialize...
-=== Step 3: Running Evaluation ===
-Job finished with exit code: 0

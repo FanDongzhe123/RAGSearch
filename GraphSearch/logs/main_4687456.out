@@ -1,8 +1,0 @@
-🚀 Starting Job for METHOD: graphrag | DATASET: hotpotqa
-📂 Dataset Mapping: hotpotqa -> HotpotQA
-🐍 Using Retriever Env: /scratch/df2362/conda_env_new/graphrag
-📝 Logs will be saved to: /scratch/sl11766/GraphSearch-main/logs/graphrag/hotpotqa/4687456
-=== Step 1: Starting vLLM Server ===
-=== Step 2: Starting Retriever (graphrag) ===
-⏳ Waiting 300s for servers to initialize...
-=== Step 3: Running Evaluation ===
