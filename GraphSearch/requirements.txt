@@ -1,0 +1,11 @@
+numpy
+
+aiohttp
+
+tqdm
+
+python-dotenv
+
+openai>=1.0.0
+
+vllm

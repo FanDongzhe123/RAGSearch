@@ -1,0 +1,24 @@
+📝 日志目录: /scratch/df2362/GraphSearch-main
+=========================================
+GraphSearch 评估启动脚本
+=========================================
+Method:        dense
+Dataset:       hotpotqa -> HotpotQA
+Eval mode:     dense
+Start/End:     0 / -1
+Top-K:         5
+Concurrency:   10
+Retriever env: /scratch/df2362/conda_env/retriever
+Retriever:     ANN_retrieval_launch.sh (port 8471)
+vLLM port:     8472 (retriever+1)
+RETRIEVER_URL:  http://127.0.0.1:8471/retrieve
+=========================================
+
+=== Step 1: 启动 vLLM Server ===
+  vLLM PID: 1607864
+=== Step 2: 启动 Retriever (dense) ===
+  Retriever PID: 1607865
+⏳ 等待 300s 供服务就绪...
+=== Step 3: 运行评估 ===
+run_universal.sh: line 232: syntax error near unexpected token `fi'
+run_universal.sh: line 232: `fi'

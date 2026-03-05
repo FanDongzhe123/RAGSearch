@@ -1,0 +1,236 @@
+import json
+import re
+import os
+import asyncio
+from typing import Any, Dict, List, Tuple
+#import traceback
+from openai import AsyncOpenAI
+
+from config import LLM_API_KEY, MODEL_NAME, EMBED_MODEL_NAME
+
+def compute_args_hash(*args: Any, cache_type: str | None = None) -> str:
+    """Compute a hash for the given arguments.
+    Args:
+        *args: Arguments to hash
+        cache_type: Type of cache (e.g., 'keywords', 'query', 'extract')
+    Returns:
+        str: Hash string
+    """
+    import hashlib
+
+    # Convert all arguments to strings and join them
+    args_str = "".join([str(arg) for arg in args])
+    if cache_type:
+        args_str = f"{cache_type}:{args_str}"
+
+    # Compute MD5 hash
+    return hashlib.md5(args_str.encode()).hexdigest()
+
+async def openai_complete(
+    prompt,
+    model="Qwen2.5-7B-Instruct",
+    system_prompt=None,
+    history_messages=[],
+    temperature=0.0,
+    **kwargs,
+) -> str:
+    model = MODEL_NAME
+    # LLM URL 由 run_universal.sh 通过环境变量 LLM_BASE_URL 传入，未设置时用默认
+    base_url = os.environ.get("LLM_BASE_URL", "http://127.0.0.1:8123/v1")
+    print(f"DEBUG: Connecting to {base_url} with model {model}...")
+    openai_async_client = AsyncOpenAI(
+        api_key=LLM_API_KEY, base_url=base_url
+    )
+
+    messages = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+    messages.extend(history_messages)
+    messages.append({"role": "user", "content": prompt})
+
+    try:
+        response = await openai_async_client.chat.completions.create(
+            model=model, messages=messages, temperature=temperature,top_p=0.8, 
+                max_tokens=16384, **kwargs
+        )
+
+        return response.choices[0].message.content
+    except Exception as e:
+        # 【关键修改】打印详细报错！
+        print(f"\n❌ CRITICAL LLM ERROR:")
+        print(f"   Target URL: {base_url}")
+        print(f"   Target Model: {model}")
+        print(f"   Error Type: {type(e)}")
+        print(f"   Error Message: {e}")
+        # print(traceback.format_exc()) # 如果需要堆栈信息取消注释
+        return ""
+
+def load_vdb(dataset, documents):
+    import faiss
+    from sentence_transformers import SentenceTransformer
+    index_path = f"./db/vdb/{dataset}_index.faiss"
+    embed_model = SentenceTransformer(EMBED_MODEL_NAME, trust_remote_code=True)
+
+    if os.path.exists(index_path):
+        index = faiss.read_index(index_path)
+        return index, embed_model
+    
+    embeddings = embed_model.encode(documents, show_progress_bar=True)
+    dim = embeddings.shape[1]
+    index = faiss.IndexFlatL2(dim)
+    index.add(embeddings)
+    
+    os.makedirs(os.path.dirname(index_path), exist_ok=True)
+    faiss.write_index(index, index_path)
+    return index, embed_model
+
+def vdb_retrieve(question, documents, index, embed_model, top_k):
+    query_embedding = embed_model.encode([question])
+    _, I = index.search(query_embedding, k=top_k)
+    retrieved_docs = [documents[i] for i in I[0]]
+    return retrieved_docs
+
+
+# --- Search-R1 style remote retriever (replace vdb_retrieve when using a retrieve service) ---
+def _extract_contents(doc_item):
+    """Extract text from a single document item returned by the retriever API."""
+    doc = doc_item.get("document", {}) if isinstance(doc_item, dict) else {}
+    contents = doc.get("contents")
+    if contents:
+        return contents
+    title = doc.get("title", "")
+    text = doc.get("text", "")
+    if title and text:
+        return f"{title}\n{text}"
+    return str(doc) if doc else ""
+
+
+def retrieve_topk_remote(query: str, url: str, topk: int = 5, timeout: int = 30) -> List[dict]:
+    """Call remote retriever API (Search-R1 style). Returns raw result list for one query."""
+    import requests
+    payload = {"queries": [query], "topk": topk, "return_scores": True}
+    resp = requests.post(url, json=payload, timeout=timeout)
+    resp.raise_for_status()
+    data = resp.json()
+    result_per_query = data.get("result", [])
+    if not result_per_query:
+        return []
+    return result_per_query[0]
+
+
+def remote_retrieve(question: str, retriever_url: str, top_k: int) -> List[str]:
+    """
+    Retrieve context via remote retriever (Search-R1 retrieve_doc style).
+    Returns a list of context strings, same shape as vdb_retrieve().
+    """
+    raw = retrieve_topk_remote(question, retriever_url, topk=top_k)
+    context = []
+    for doc_item in raw[:top_k]:
+        ctx = _extract_contents(doc_item)
+        if ctx:
+            context.append(ctx)
+    return context
+
+def extract_words_str(text):
+    return ' '.join(re.findall(r'[A-Za-z]+', text))
+
+def format_history_context(history):
+    history_context_str = ""
+    for i, (q, ctx_sum, a) in enumerate(history):
+        history_context_str += f"Sub-query {i + 1}: {q}\nRetrieved context:\n{ctx_sum}\nSub-query answer: {a}\n\n"
+    return history_context_str.strip()
+
+def truncate_str_by_token_size(
+    text: str,
+    max_token_size: int,
+    tokenizer
+) -> str:
+    if max_token_size <= 0:
+        return ""
+
+    encoded = tokenizer.encode(text)
+    truncated = encoded[:max_token_size]
+    return tokenizer.decode(truncated, skip_special_tokens=True)
+
+def normalize(text: str) -> str:
+    import string
+    """
+    Normalize a given string by applying the following transformations:
+    1. Convert the string to lowercase.
+    2. Remove punctuation characters.
+    3. Remove the articles "a", "an", and "the".
+    4. Normalize whitespace by collapsing multiple spaces into one.
+
+    Args:
+        text (str): The input string to be normalized.
+
+    Returns:
+        str: The normalized string.
+    """
+    def remove_articles(text):
+        return re.sub(r"\b(a|an|the)\b", " ", text)
+
+    def white_space_fix(text):
+        return " ".join(text.split())
+
+    def remove_punc(text):
+        exclude = set(string.punctuation)
+        return "".join(ch for ch in text if ch not in exclude)
+
+    def lower(text):
+        return text.lower()
+    
+    return white_space_fix(remove_articles(remove_punc(lower(text)))).split()
+
+def parse_expanded_queries(query_expansion_result: str):
+    import ast
+    """
+    Try to extract and parse a Python-style list of strings from
+    the model output, even if surrounded by extra text.
+    """
+    text = query_expansion_result.strip()
+
+    # Step 1️⃣: 尝试直接安全解析
+    try:
+        parsed = ast.literal_eval(text)
+        if isinstance(parsed, list) and all(isinstance(x, str) for x in parsed):
+            return parsed
+    except Exception:
+        pass
+
+    # Step 2️⃣: 用正则在文本中提取形如 ["...", "..."] 的部分
+    match = re.search(r'\[[\s\S]*?\]', text)
+    if match:
+        list_str = match.group(0)
+        try:
+            parsed = ast.literal_eval(list_str)
+            if isinstance(parsed, list) and all(isinstance(x, str) for x in parsed):
+                return parsed
+        except Exception:
+            pass
+
+    # Step 3️⃣: 如果都失败，就退化为单元素列表
+    return [text]
+def always_get_an_event_loop() -> asyncio.AbstractEventLoop:
+    """
+    Ensure that there is always an event loop available.
+
+    This function tries to get the current event loop. If the current event loop is closed or does not exist,
+    it creates a new event loop and sets it as the current event loop.
+
+    Returns:
+        asyncio.AbstractEventLoop: The current or newly created event loop.
+    """
+    try:
+        # Try to get the current event loop
+        current_loop = asyncio.get_event_loop()
+        if current_loop.is_closed():
+            raise RuntimeError("Event loop is closed.")
+        return current_loop
+
+    except RuntimeError:
+        # If no event loop exists or it is closed, create a new one
+        # logger.info("Creating a new event loop in main thread.")
+        new_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(new_loop)
+        return new_loop

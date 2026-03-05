@@ -1,0 +1,2 @@
+Error: Please provide METHOD and DATASET variables.
+Usage: sbatch --export=METHOD=hypergraphrag,DATASET=hotpotqa run_universal.sbatch

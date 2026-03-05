@@ -1,0 +1,2 @@
+slurmstepd: error: *** JOB 4687454 ON ga026 CANCELLED AT 2026-02-02T05:26:56 ***
+slurmstepd: error: Detected 1 oom_kill event in StepId=4687454.batch. Some of the step tasks have been OOM Killed.

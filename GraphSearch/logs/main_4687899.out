@@ -1,0 +1,8 @@
+🚀 Starting Job for METHOD: hipporag2 | DATASET: hotpotqa
+📂 Dataset Mapping: hotpotqa -> HotpotQA
+🐍 Using Retriever Env: /scratch/df2362/conda_env/hipporag
+📝 Logs will be saved to: /scratch/sl11766/GraphSearch-main/logs/hipporag2/hotpotqa/4687899
+=== Step 1: Starting vLLM Server ===
+=== Step 2: Starting Retriever (hipporag2) ===
+⏳ Waiting 300s for servers to initialize...
+=== Step 3: Running Evaluation ===

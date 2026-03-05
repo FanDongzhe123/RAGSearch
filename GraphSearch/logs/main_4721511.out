@@ -1,0 +1,16 @@
+🚀 Starting Job for METHOD: raptor | DATASET: hotpotqa
+Dataset Mapping: hotpotqa -> HotpotQA
+Using Retriever Env: /scratch/df2362/conda_env_new/raptor
+📝 Logs will be saved to: /scratch/sl11766/GraphSearch-main/logs/raptor/hotpotqa/4721511
+=== Step 1: Starting vLLM Server ===
+=== Step 2: Starting Retriever (raptor) ===
+⏳ Waiting 300s for servers to initialize...
+=== 🔍 DEBUG: Network Diagnostic Start ===
+Checking Proxy Variables:
+No proxy variables set.
+Checking Port 8316:
+❌ No process listening on 8316!
+Testing connection with CURL:
+❌ CURL Connection Failed
+=== 🔍 DEBUG: Network Diagnostic End ===
+=== Step 3: Running Evaluation ===

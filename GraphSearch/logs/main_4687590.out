@@ -1,0 +1,8 @@
+🚀 Starting Job for METHOD: raptor | DATASET: nq
+📂 Dataset Mapping: nq -> NQ
+🐍 Using Retriever Env: /scratch/df2362/conda_env_new/raptor
+📝 Logs will be saved to: /scratch/sl11766/GraphSearch-main/logs/raptor/nq/4687590
+=== Step 1: Starting vLLM Server ===
+=== Step 2: Starting Retriever (raptor) ===
+⏳ Waiting 300s for servers to initialize...
+=== Step 3: Running Evaluation ===

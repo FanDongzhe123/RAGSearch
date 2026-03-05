@@ -1,0 +1,25 @@
+(Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.)
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 127.0.0.1:8316...
+* Connected to 127.0.0.1 (127.0.0.1) port 8316
+> POST /search HTTP/1.1
+> Host: 127.0.0.1:8316
+> User-Agent: curl/8.5.0
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 29
+> 
+} [29 bytes data]
+< HTTP/1.1 422 Unprocessable Entity
+< date: Mon, 02 Feb 2026 13:44:36 GMT
+< server: uvicorn
+< content-length: 114
+< content-type: application/json
+< 
+{ [114 bytes data]
+100   143  100   114  100    29  18222   4635 --:--:-- --:--:-- --:--:-- 23833
+* Connection #0 to host 127.0.0.1 left intact
+slurmstepd: error: *** JOB 4688020 ON ga005 CANCELLED AT 2026-02-02T09:41:33 ***
+slurmstepd: error: Detected 1 oom_kill event in StepId=4688020.batch. Some of the step tasks have been OOM Killed.

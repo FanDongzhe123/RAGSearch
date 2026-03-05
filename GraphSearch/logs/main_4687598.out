@@ -1,0 +1,9 @@
+🚀 Starting Job for METHOD: hypergraphrag | DATASET: nq
+📂 Dataset Mapping: nq -> NQ
+🐍 Using Retriever Env: /scratch/df2362/conda_env/graphr1
+📝 Logs will be saved to: /scratch/sl11766/GraphSearch-main/logs/hypergraphrag/nq/4687598
+=== Step 1: Starting vLLM Server ===
+=== Step 2: Starting Retriever (hypergraphrag) ===
+⏳ Waiting 300s for servers to initialize...
+=== Step 3: Running Evaluation ===
+Job finished with exit code: 0
