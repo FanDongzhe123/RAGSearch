@@ -100,9 +100,34 @@ This is an example of constructing GraphRAG on HippoRAG2; other retrieve backend
 ### Graph-R1
 ```bash
 cd GraphR1
+conda activate ./env/graphr1
 # -a is the retriever server port number; -d is the training dataset -p is the backbone path; -m is the backbone name; -r is the retriever backend; -b is the batch size
 bash run_graphr1.sh -a 8007 -d NQ-HotpotQA -p Qwen/Qwen2.5-7B-Instruct -m Qwen2.5-7B-Instruct -r hipporag2 -b 128 -g 4
+#inference
+bash infer_graphr1.sh -a 8503 -t NQ-HotpotQA -d PopQA -r hipporag2 -g 1 -m your/pre-trained model path
 ```
+### Search-R1
+```bash
+cd Search-R1
+conda activate./env/retriever
+nohup bash ANN_retrieval_launch.sh  -p 8605 > retriever_result_8605.log 2>&1 &
+conda activate ./env/searchr1
+bash train_grpo.sh -p 8605 -d nq-hotpotqa
+#inference
+python run_eval_vllm.py \
+  --model_id /your/pre-trained model path \
+  --dataset_path /path-to-quesion.json \
+  --output_file /path-to-answer-file.json \
+  --max_turns 5 \
+  --retriever_port 8205 \
+  --tensor_parallel_size 1 \
+  > logs/musique_on_joint_3b.log 2>&1
+```
+### Search-o1
+```bash
+cd Search-o1
+conda activate./env/search-o1
 
+```
 
 
