@@ -127,7 +127,13 @@ python run_eval_vllm.py \
 ```bash
 cd Search-o1
 conda activate./env/search-o1
-
+bash run_search_o1_graphrag.sh -g hipporag2 -d HotpotQA -m Qwen/Qwen2.5-7B-Instruct -p 8205
 ```
 
+### GraphSearch
+```bash
+cd GraphSearch
+conda activate./env/GraphSearch
+bash run_universal.sh -m hipporag2 -d HotpotQA -p 8205
+```
 
