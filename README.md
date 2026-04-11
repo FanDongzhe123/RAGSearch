@@ -34,7 +34,7 @@ python -m spacy download en_core_web_trf
 ```bash
 conda create -p ./env/raptor python=3.9
 conda activate ./env/raptor
-cd Graph-R1
+cd GraphR1
 cd raptor
 pip install -r requirements.txt
 ```
@@ -90,5 +90,19 @@ pip3 install -e .
 cd Graph-R1
 pip3 install -r requirements.txt
 ```
+
+## Offline GraphRAG Construction
+This is an example of constructing GraphRAG on HippoRAG2; other retrieve backends follow a similar process.
+- Step 1 Set your openai API key in `openai_api_key_txt`
+- Step 2 Build the GraphRAG with `build_hipporag_increment.py`
+
+## Quick Start
+### Graph-R1
+```bash
+cd GraphR1
+# -a is the retriever server port number; -d is the training dataset -p is the backbone path; -m is the backbone name; -r is the retriever backend; -b is the batch size
+bash run_graphr1.sh -a 8007 -d NQ-HotpotQA -p Qwen/Qwen2.5-7B-Instruct -m Qwen2.5-7B-Instruct -r hipporag2 -b 128 -g 4
+```
+
 
 
