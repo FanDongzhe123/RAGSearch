@@ -51,7 +51,7 @@ HypergraphRAG shares the same environment as Graph-R1
 ```bash
 conda activate ./env/graph-r1
 ```
-### Training-free agent systems
+### Training-free agentic systems
 #### Search-o1
 ```bash
 conda create -p ./env/search_o1 python=3.9
@@ -61,5 +61,34 @@ pip install -r requirements.txt
 ```
 
 #### GraphSearch
+```bash
+conda create -p ./env/graphsearch python=3.11
+conda activate ./env/graphsearch
+cd GraphSearch
+pip install -r requirements.txt
+```
+
+### RL-based agentic systems
+#### Search-R1
+```bash
+conda create -p ./env/searchr1 python=3.9
+conda activate ./env/searchr1
+pip install torch==2.4.0 --index-url https://download.pytorch.org/whl/cu121
+pip3 install vllm==0.6.3
+pip install -e .
+pip3 install flash-attn --no-build-isolation
+pip install wandb
+```
+
+#### Graph-R1
+```bash
+conda create -p ./env/graphr1 python==3.11.11
+conda activate ./env/graphr1
+pip3 install torch==2.4.0 --index-url https://download.pytorch.org/whl/cu124
+pip3 install flash-attn --no-build-isolation
+pip3 install -e .
+cd Graph-R1
+pip3 install -r requirements.txt
+```
 
 
