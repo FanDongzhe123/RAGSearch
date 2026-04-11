@@ -1,2 +1,3 @@
 # RAGSearch
-RAGSearch code base
+## Installation
+### Retriever Backends
