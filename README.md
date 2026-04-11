@@ -51,3 +51,15 @@ HypergraphRAG shares the same environment as Graph-R1
 ```bash
 conda activate ./env/graph-r1
 ```
+### Training-free agent systems
+#### Search-o1
+```bash
+conda create -p ./env/search_o1 python=3.9
+conda activate ./env/search_o1
+cd Search-o1
+pip install -r requirements.txt
+```
+
+#### GraphSearch
+
+
