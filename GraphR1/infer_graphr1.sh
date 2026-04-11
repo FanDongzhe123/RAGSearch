@@ -51,7 +51,7 @@ case "$GRAPHRAG" in
     API_ENV="hipporag"
     API_CONDA_ROOT="$CONDA_ROOT"
     STARTUP_PATTERN="Uvicorn running on"
-    DEFAULT_BS=32
+    DEFAULT_BS=128
     ;;
 
   linearrag)
@@ -59,16 +59,9 @@ case "$GRAPHRAG" in
     API_ENV="linearrag"
     API_CONDA_ROOT="$CONDA_ROOT"
     STARTUP_PATTERN="Uvicorn running on"
-    DEFAULT_BS=32
+    DEFAULT_BS=128
     ;;
 
-  lightrag)
-    API_SCRIPT="script_api_LightRAG.py"
-    API_ENV="lightrag"
-    API_CONDA_ROOT="$CONDA_ROOT"
-    STARTUP_PATTERN="Application startup complete"
-    DEFAULT_BS=32
-    ;;
 
   raptor)
     API_SCRIPT="script_api_RAPTOR.py"
