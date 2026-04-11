@@ -24,5 +24,30 @@ pip install hipporag
 conda create -p ./env/linearrag python=3.9
 conda activate ./env/linearrag
 cd Graph-R1
-cd Linearrag
+cd LinearRAG
+pip install -r requirements.txt
+# Download Spacy language model
+python -m spacy download en_core_web_trf
+```
+
+#### RAPTOR
+```bash
+conda create -p ./env/raptor python=3.9
+conda activate ./env/raptor
+cd Graph-R1
+cd raptor
+pip install -r requirements.txt
+```
+
+#### GraphRAG
+```bash
+conda create -p ./env/graphrag python=3.10
+conda activate ./env/graphrag
+python -m pip install graphrag
+```
+
+#### HyperGraphRAG
+HypergraphRAG shares the same environment as Graph-R1
+```bash
+conda activate ./env/graph-r1
 ```
